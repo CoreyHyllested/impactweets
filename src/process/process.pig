@@ -51,8 +51,6 @@ theLinkTopics = FOREACH thelinkTopics GENERATE $0 as links, COUNT(linkTopics) as
 
 
 
-
-
 -- get better stopword list
 --stopWords = LOAD 'stopwords' using PigStorage('\t') as word;
 --cln1 = FOREACH raw GENERATE FLATTEN(org.apache.pig.tutorial.NGramGenerator(text)) as ngram, text;  
