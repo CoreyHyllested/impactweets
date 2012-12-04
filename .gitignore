@@ -1,0 +1,13 @@
+.gitignore
+data/*
+src/process/.*.sw*
+src/process/testing/signal.out
+src/process/testing/pig_*.log
+src/process/testing/.*.sw*
+src/process/testing/bin/*
+src/process/testing/lib/*
+src/process/testing/lib64/*
+bin/*
+format/*topic*
+
+

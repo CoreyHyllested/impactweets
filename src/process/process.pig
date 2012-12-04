@@ -1,7 +1,7 @@
 register tutorial.jar
 raw = LOAD 'signal.out' using PigStorage('\t') as (tweetID, usr, rtcount, topics, links, mentions, created, replyto, datweet);
 
--- Done Get an ordered idea of topics by pure count.
+-- Get an ordered idea of topics by pure count.
 -- Get a topic count per individual user. (e.g.  10 topic mentions from 10 users; alternately 10 mentions from 3 users).
 -- Get a topic count per tweet.  (e.g. 10 topic mentions in 10 tweets, 10 mentions in 7 tweets).
 topicFiltr = FILTER raw BY topics IS NOT NULL;
@@ -11,9 +11,8 @@ topicCnt   = FOREACH topicGrp GENERATE $0 as topic, COUNT_STAR(topicTweet) as to
 topicOrd   = ORDER topicCnt by topicCount;
 
 
--- How many topic in a single tweet before we suspect SPAM?  2 , 3, 4, ANY?
-topicCount = FOREACH topicFiltr GENERATE COUNT_STAR(TOKENIZE(topics)) as tpt, topics, datweet;
-tpt3       = FILTER topicCount BY tpt > 2
+topicTweetsByUser = FOREACH topicTweet GENERATE topic, usr, rtcount;
+topicTBUgroup     = GROUP topicTweetsByUser by (topic, usr);
 
 
 -- Done:: Get an ordered idea of links by pure count.
@@ -25,15 +24,6 @@ linkTweet = FOREACH linkCount GENERATE usr, rtcount, topics, lpt, FLATTEN(links)
 linkGrp   = GROUP linkTweet BY link;
 linkCnt   = FOREACH linkGrp GENERATE $0 as link, COUNT_STAR(linkTweet) as linkCount, linkTweet; 
 linkOrd   = ORDER linkCnt by linkCount;
-
---include group of users, not tweets
---linkCnt   = FOREACH linkGrp GENERATE $0.link as link, $0.usr as usr, COUNT_STAR(linkTweet) as linkCount, linkTweet; 
-
-
---What are the 3+ links/tweet
-link3lpt  = FILTER linkTweet BY lpt > 2;
-linkGrp   = GROUP linkTweet BY (link, usr);
-
 
 
 -- Begins to create a graph of topics.
