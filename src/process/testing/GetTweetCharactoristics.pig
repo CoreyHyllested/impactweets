@@ -1,4 +1,4 @@
-register tutorial.jar
+register bin/tutorial.jar
 
 --------------------------------------------------------------------------------------------------------------------------
 -- Read and Process raw data.  Get some general stats on ALL the data.
@@ -128,7 +128,6 @@ lt_ordered = FILTER  lt_ordered BY link IS NOT NULL;
 lt_ordered = FOREACH lt_ordered GENERATE link, score, topics;
 lt_ordered = ORDER   lt_ordered by score DESC;
 STORE lt_ordered into 'out/link_description' using PigStorage('\t');
-
 
 
 
