@@ -103,6 +103,7 @@ topicLinks = FOREACH topicGroup {
 
 ---- 500 NonUtil Topics with Associated Links (Max 5) -----------------------------------------------------
 -- Creates list of non-utility topics, rated by their score.  Links/topic rated . 
+-- TODO drop filter?
 -----------------------------------------------------------------------------------------------------------
 tl_ordered = JOIN toptopics BY topic RIGHT OUTER, topicLinks BY group;
 tl_ordered = FILTER  tl_ordered BY toptopics::topic IS NOT NULL;
@@ -133,6 +134,16 @@ STORE lt_ordered into 'out/link_description' using PigStorage('\t');
 
 usrGroup  = GROUP  distweets by usr;
 usrStats  = FOREACH usrGroup  {
-	GENERATE group as usr, SUM(distweets.rtcount) as totalRT, AVG(distweets.tpt) as avg_topic, AVG(distweets.lpt) as avg_link;
+	GENERATE group as usr, SUM(distweets.rtcount) as totalRT, AVG(distweets.rtcount) as avg_rtcount, AVG(distweets.tpt) as avg_topic, AVG(distweets.lpt) as avg_link;
 }
-STORE usrStats into 'out/userscore' using PigStorage('\t');
+usrbysumrt = ORDER usrStats BY totalRT;
+usrbyavgrt = ORDER usrStats BY avg_rtcount;
+usrbyavgl  = ORDER usrStats BY avg_topic;
+usrbyavgt  = ORDER usrStats BY avg_link;
+
+STORE usrStats into 'out/user/score' using PigStorage('\t');
+STORE usrbysumrt into 'out/user/retweet_total' using PigStorage('\t');
+STORE usrbyavgrt into 'out/user/retweet_rtpt' using PigStorage('\t');
+STORE usrbyavgl into  'out/user/lpt' using PigStorage('\t');
+STORE usrbyavgt into  'out/user/tpt' using PigStorage('\t');
+
